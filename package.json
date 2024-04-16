@@ -1,0 +1,21 @@
+{
+  "name": "playground-server",
+  "version": "1.0.0",
+  "description": "An project for applying to codedamn fullstack engineer position",
+  "main": "index.js",
+  "scripts": {
+    "dev": "tsx watch ./src/index.ts",
+    "start": "node ./build/index.js"
+  },
+  "author": "ShubhamVsCode",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "tsx": "^4.7.2"
+  }
+}
