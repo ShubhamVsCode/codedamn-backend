@@ -1,10 +1,11 @@
 {
   "name": "playground-server",
   "version": "1.0.0",
-  "description": "An project for applying to codedamn fullstack engineer position",
+  "description": "A project for applying to codedamn fullstack engineer position",
   "main": "index.js",
   "scripts": {
     "dev": "tsx watch ./src/index.ts",
+    "build": "tsc -p ./tsconfig.json",
     "start": "node ./build/index.js"
   },
   "author": "ShubhamVsCode",
@@ -12,10 +13,14 @@
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
-    "express": "^4.19.2"
+    "express": "^4.19.2",
+    "mongoose": "^8.3.2",
+    "typescript": "^5.4.5",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@types/express": "^4.17.21",
+    "tsc": "^2.0.4",
     "tsx": "^4.7.2"
   }
 }
