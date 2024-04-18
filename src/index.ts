@@ -3,6 +3,8 @@ import dotenv from "dotenv";
 import fileRouter from "./routes/file.routes";
 import { connectDb } from "./utils/db";
 import { MongooseError } from "mongoose";
+import userRouter from "./routes/user.routes";
+import sandboxRouter from "./routes/sandbox.routes";
 dotenv.config();
 
 const app = express();
@@ -14,7 +16,9 @@ app.get("/health", (req, res) => {
   res.json({ message: "Healthy!" });
 });
 
+app.use("/user", userRouter);
 app.use("/file", fileRouter);
+app.use("/sandbox", sandboxRouter);
 
 app.listen(PORT, async () => {
   console.log(`Server running on port ${PORT}`);
