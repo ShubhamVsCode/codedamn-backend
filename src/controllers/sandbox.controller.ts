@@ -2,6 +2,11 @@ import Docker from "dockerode";
 import { Request, Response } from "express";
 import { z } from "zod";
 import UserModel from "../models/user.model";
+import sudo from "sudo-prompt";
+
+const options = {
+  name: "CodeDamn",
+};
 
 let HOST_PORT = 4000;
 
@@ -30,7 +35,21 @@ export const startSandbox = async (req: Request, res: Response) => {
     //     .json({ error: "Sandbox is already running", success: false });
     // }
 
-    const docker = new Docker();
+    const docker = new Docker({
+      socketPath: await new Promise((resolve, reject) => {
+        sudo.exec(
+          "docker -H unix:///var/run/docker.sock version",
+          options,
+          (error, stdout, stderr) => {
+            if (error) {
+              reject(error);
+            } else {
+              resolve("/var/run/docker.sock");
+            }
+          },
+        );
+      }),
+    });
 
     const Id = user._id as unknown as string;
 
@@ -98,7 +117,21 @@ export const stopSandbox = async (req: Request, res: Response) => {
         .json({ error: "Sandbox is not running", success: false });
     }
 
-    const docker = new Docker();
+    const docker = new Docker({
+      socketPath: await new Promise((resolve, reject) => {
+        sudo.exec(
+          "docker -H unix:///var/run/docker.sock version",
+          options,
+          (error, stdout, stderr) => {
+            if (error) {
+              reject(error);
+            } else {
+              resolve("/var/run/docker.sock");
+            }
+          },
+        );
+      }),
+    });
     const container = docker.getContainer(`codedamn-${user._id}`);
 
     await container.stop();
