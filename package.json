@@ -11,6 +11,8 @@
   "author": "ShubhamVsCode",
   "license": "ISC",
   "dependencies": {
+    "@aws-sdk/client-ec2": "^3.557.0",
+    "@aws-sdk/client-ecs": "^3.556.0",
     "cors": "^2.8.5",
     "dockerode": "^4.0.2",
     "dotenv": "^16.4.5",

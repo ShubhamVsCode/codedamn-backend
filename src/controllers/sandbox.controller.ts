@@ -2,7 +2,14 @@ import Docker from "dockerode";
 import { Request, Response } from "express";
 import { z } from "zod";
 import UserModel from "../models/user.model";
-import sudo from "sudo-prompt";
+import {
+  DescribeTasksCommand,
+  ECSClient,
+  RunTaskCommand,
+  RunTaskRequest,
+} from "@aws-sdk/client-ecs";
+import dotenv from "dotenv";
+dotenv.config();
 
 const options = {
   name: "CodeDamn",
@@ -10,7 +17,155 @@ const options = {
 
 let HOST_PORT = 4000;
 
+export const AWS_REGION = "ap-south-1";
+const CLUSTER = "codedamn-cluster";
+const TASK_DEFINITION = "codedamn-taskdefinition";
+const LAUNCH_TYPE = "FARGATE";
+const SUBNETS = [
+  "subnet-001f6351113b38f98",
+  "subnet-0d47a0db6b3821676",
+  "subnet-08ffc70d81c2c946e",
+];
+
+const ecsClient = new ECSClient({
+  region: AWS_REGION,
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+  },
+});
+
+const params: RunTaskRequest = {
+  cluster: CLUSTER,
+  taskDefinition: TASK_DEFINITION,
+  launchType: LAUNCH_TYPE,
+  count: 1,
+  networkConfiguration: {
+    awsvpcConfiguration: {
+      subnets: SUBNETS,
+      assignPublicIp: "ENABLED",
+    },
+  },
+};
+
 const PORT_TO_USER = new Map<number, string>();
+
+const output = {
+  $metadata: {
+    httpStatusCode: 200,
+    requestId: "a267108c-51fa-4286-a9af-fa1ba84262e0",
+    attempts: 1,
+    totalRetryDelay: 0,
+  },
+  failures: [],
+  tasks: [
+    {
+      attachments: [
+        {
+          details: [
+            {
+              name: "subnetId",
+              value: "subnet-001f6351113b38f98",
+            },
+          ],
+          id: "d26a0cfb-5a57-48e1-8660-706088414432",
+          status: "PRECREATED",
+          type: "ElasticNetworkInterface",
+        },
+      ],
+      attributes: [
+        {
+          name: "ecs.cpu-architecture",
+          value: "x86_64",
+        },
+      ],
+      availabilityZone: "ap-south-1a",
+      clusterArn:
+        "arn:aws:ecs:ap-south-1:063602050575:cluster/codedamn-cluster",
+      containers: [
+        {
+          containerArn:
+            "arn:aws:ecs:ap-south-1:063602050575:container/codedamn-cluster/8910678a66d84034b7821f3fa95d1570/4a0ee733-6820-4058-adeb-8b985c6ae7f9",
+          cpu: "0",
+          image: "063602050575.dkr.ecr.ap-south-1.amazonaws.com/codedamn-image",
+          lastStatus: "PENDING",
+          name: "codedamn-container",
+          networkInterfaces: [],
+          taskArn:
+            "arn:aws:ecs:ap-south-1:063602050575:task/codedamn-cluster/8910678a66d84034b7821f3fa95d1570",
+        },
+      ],
+      cpu: "1024",
+      createdAt: "2024-04-21T14:22:13.816Z",
+      desiredStatus: "RUNNING",
+      enableExecuteCommand: false,
+      ephemeralStorage: {
+        sizeInGiB: 20,
+      },
+      group: "family:codedamn-taskdefinition",
+      lastStatus: "PROVISIONING",
+      launchType: "FARGATE",
+      memory: "3072",
+      overrides: {
+        containerOverrides: [
+          {
+            name: "codedamn-container",
+          },
+        ],
+        inferenceAcceleratorOverrides: [],
+      },
+      platformFamily: "Linux",
+      platformVersion: "1.4.0",
+      tags: [],
+      taskArn:
+        "arn:aws:ecs:ap-south-1:063602050575:task/codedamn-cluster/8910678a66d84034b7821f3fa95d1570",
+      taskDefinitionArn:
+        "arn:aws:ecs:ap-south-1:063602050575:task-definition/codedamn-taskdefinition:1",
+      version: 1,
+    },
+  ],
+};
+
+const runContainer = async () => {
+  try {
+    // Start the task
+    const data = await ecsClient.send(new RunTaskCommand(params));
+    console.log("Task started:", data);
+
+    // Extract task ARN from the response
+    const taskArn = data?.tasks?.[0]?.taskArn;
+
+    if (!taskArn) {
+      throw new Error("Task ARN not found in ECS response");
+    }
+
+    // Poll ECS until the task is in a running state
+    let taskStatus = "";
+    let describeData;
+    while (taskStatus !== "RUNNING") {
+      const describeParams = {
+        cluster: CLUSTER,
+        tasks: [taskArn],
+      };
+      describeData = await ecsClient.send(
+        new DescribeTasksCommand(describeParams),
+      );
+      taskStatus = describeData?.tasks?.[0]?.lastStatus || "";
+
+      // Wait for a few seconds before polling again
+      await new Promise((resolve) => setTimeout(resolve, 5000));
+    }
+
+    console.log("Task is now running");
+    console.log("Task details:", JSON.stringify(describeData, null, 2));
+
+    // Return the task details or perform further actions as needed
+    return describeData;
+  } catch (err) {
+    console.error("Error running container:", err);
+    throw err; // Propagate the error to the caller
+  }
+};
 
 export const startSandbox = async (req: Request, res: Response) => {
   try {
@@ -29,56 +184,12 @@ export const startSandbox = async (req: Request, res: Response) => {
       return res.status(400).json({ error: "User not found", success: false });
     }
 
+    await runContainer();
     // if (user.isSandboxRunning) {
     //   return res
     //     .status(400)
     //     .json({ error: "Sandbox is already running", success: false });
     // }
-
-    const docker = new Docker({
-      socketPath: await new Promise((resolve, reject) => {
-        sudo.exec(
-          "docker -H unix:///var/run/docker.sock version",
-          options,
-          (error, stdout, stderr) => {
-            if (error) {
-              reject(error);
-            } else {
-              resolve("/var/run/docker.sock");
-            }
-          },
-        );
-      }),
-    });
-
-    const Id = user._id as unknown as string;
-
-    if (PORT_TO_USER.has(HOST_PORT)) {
-      HOST_PORT++;
-      PORT_TO_USER.set(HOST_PORT, Id);
-    } else {
-      PORT_TO_USER.set(HOST_PORT, Id);
-    }
-
-    const PORT = `${HOST_PORT}/tcp`;
-
-    const conatinerConfig: Docker.ContainerCreateOptions = {
-      Image: "codedamn-image",
-      name: `codedamn-${user._id}`,
-      HostConfig: {
-        PortBindings: {
-          [PORT]: [
-            {
-              HostPort: "4000",
-            },
-          ],
-        },
-      },
-    };
-
-    const container = await docker.createContainer(conatinerConfig);
-
-    await container.start();
 
     user.isSandboxRunning = true;
     await user.save();
@@ -116,25 +227,6 @@ export const stopSandbox = async (req: Request, res: Response) => {
         .status(400)
         .json({ error: "Sandbox is not running", success: false });
     }
-
-    const docker = new Docker({
-      socketPath: await new Promise((resolve, reject) => {
-        sudo.exec(
-          "docker -H unix:///var/run/docker.sock version",
-          options,
-          (error, stdout, stderr) => {
-            if (error) {
-              reject(error);
-            } else {
-              resolve("/var/run/docker.sock");
-            }
-          },
-        );
-      }),
-    });
-    const container = docker.getContainer(`codedamn-${user._id}`);
-
-    await container.stop();
 
     user.isSandboxRunning = false;
     await user.save();
