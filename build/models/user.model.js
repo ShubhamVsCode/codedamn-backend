@@ -8,9 +8,18 @@ exports.UserSchema = new mongoose_1.Schema({
         required: true,
         unique: true,
     },
-    isSandboxRunning: {
-        type: Boolean,
-        default: false,
+    containerName: {
+        type: String,
+        required: true,
+        unique: true,
+    },
+    containerStatus: {
+        type: String,
+        required: true,
+        enum: ["pending", "running", "stopped"],
+    },
+    containerPort: {
+        type: String,
     },
 });
 const UserModel = (0, mongoose_1.model)("User", exports.UserSchema);

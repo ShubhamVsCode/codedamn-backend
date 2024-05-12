@@ -26,6 +26,7 @@ const PORT = process.env.PORT || 8080;
 app.use(express_1.default.json());
 app.use((0, morgan_1.default)("dev"));
 app.get("/health", (req, res) => {
+    console.log(JSON.stringify(req, null, 2));
     res.json({ message: "Healthy!" });
 });
 app.use("/user", user_routes_1.default);
