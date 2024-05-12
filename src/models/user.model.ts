@@ -6,9 +6,18 @@ export const UserSchema = new Schema({
     required: true,
     unique: true,
   },
-  isSandboxRunning: {
-    type: Boolean,
-    default: false,
+  containerName: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  containerStatus: {
+    type: String,
+    required: true,
+    enum: ["pending", "running", "stopped"],
+  },
+  containerPort: {
+    type: String,
   },
 });
 

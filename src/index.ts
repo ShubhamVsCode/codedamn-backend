@@ -15,6 +15,7 @@ app.use(express.json());
 app.use(morgan("dev"));
 
 app.get("/health", (req, res) => {
+  console.log(JSON.stringify(req, null, 2));
   res.json({ message: "Healthy!" });
 });
 
