@@ -17,7 +17,16 @@ app.use(morgan("dev"));
 
 app.use(async (req, res, next) => {
   const hostname = req.hostname;
-  const subdomain = hostname.split(".")[0];
+  const domain = "shubhamvscode.online";
+  const subdomain = hostname.replace(`.${domain}`, "");
+  if (
+    !hostname.includes(domain) ||
+    hostname === domain ||
+    subdomain === "localhost"
+  ) {
+    return next();
+  }
+
   console.log(`Request for ${subdomain}`);
   if (subdomain) {
     try {
@@ -28,6 +37,7 @@ app.use(async (req, res, next) => {
 
       const { containerPort } = user;
       req.headers.host = `localhost:${containerPort}`;
+
       console.log(`Forwarding request to localhost:${containerPort}`);
     } catch (err) {
       return next(err);
