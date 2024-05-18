@@ -5,8 +5,7 @@ import { startContainer, stopContainer } from "./docker.controller";
 import { getFreePort } from "../utils/port";
 
 const randomIdGenerator = () => {
-  const characters =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  const characters = "abcdefghijklmnopqrstuvwxyz0123456789";
   let result = "";
   for (let i = 0; i < 5; i++) {
     result += characters.charAt(Math.floor(Math.random() * characters.length));
@@ -76,6 +75,7 @@ export const startSandbox = async (req: Request, res: Response) => {
       message: "Container started successfully",
       user: user,
       success: true,
+      url: `https://${user.containerName}.shubhamvscode.online`,
     });
   } catch (error) {
     console.error("Error starting container:", error);
