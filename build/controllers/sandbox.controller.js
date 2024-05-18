@@ -18,7 +18,7 @@ const user_model_1 = __importDefault(require("../models/user.model"));
 const docker_controller_1 = require("./docker.controller");
 const port_1 = require("../utils/port");
 const randomIdGenerator = () => {
-    const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    const characters = "abcdefghijklmnopqrstuvwxyz0123456789";
     let result = "";
     for (let i = 0; i < 5; i++) {
         result += characters.charAt(Math.floor(Math.random() * characters.length));
@@ -74,6 +74,7 @@ const startSandbox = (req, res) => __awaiter(void 0, void 0, void 0, function* (
             message: "Container started successfully",
             user: user,
             success: true,
+            url: `https://${user.containerName}.shubhamvscode.online`,
         });
     }
     catch (error) {

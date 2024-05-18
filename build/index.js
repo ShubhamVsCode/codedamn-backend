@@ -32,9 +32,11 @@ app.use((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const hostname = req.hostname;
     const domain = "shubhamvscode.online";
     const subdomain = hostname.replace(`.${domain}`, "");
+    const appDomain = "app";
     if (!hostname.includes(domain) ||
         hostname === domain ||
-        subdomain === "localhost") {
+        subdomain === "localhost" ||
+        subdomain === appDomain) {
         return next();
     }
     console.log(`Request for ${subdomain}`);
