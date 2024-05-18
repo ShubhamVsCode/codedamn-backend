@@ -1,6 +1,7 @@
 import express from "express";
 import dotenv from "dotenv";
 import morgan from "morgan";
+import cors from "cors";
 import fileRouter from "./routes/file.routes";
 import { connectDb } from "./utils/db";
 import { MongooseError } from "mongoose";
@@ -14,6 +15,7 @@ const PORT = process.env.PORT || 8080;
 
 app.use(express.json());
 app.use(morgan("dev"));
+app.use(cors());
 
 app.use(async (req, res, next) => {
   const hostname = req.hostname;
