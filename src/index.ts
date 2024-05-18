@@ -21,10 +21,13 @@ app.use(async (req, res, next) => {
   const hostname = req.hostname;
   const domain = "shubhamvscode.online";
   const subdomain = hostname.replace(`.${domain}`, "");
+  const appDomain = "app";
+
   if (
     !hostname.includes(domain) ||
     hostname === domain ||
-    subdomain === "localhost"
+    subdomain === "localhost" ||
+    subdomain === appDomain
   ) {
     return next();
   }
