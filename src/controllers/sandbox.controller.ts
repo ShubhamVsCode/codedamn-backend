@@ -1,7 +1,12 @@
 import { Request, Response } from "express";
 import { z } from "zod";
 import UserModel from "../models/user.model";
-import { startContainer, stopContainer } from "./docker.controller";
+import {
+  getContainer,
+  getURL,
+  startContainer,
+  stopContainer,
+} from "./docker.controller";
 import { getFreePort } from "../utils/port";
 
 const randomIdGenerator = () => {
@@ -30,10 +35,13 @@ export const startSandbox = async (req: Request, res: Response) => {
       return res.status(400).json({ error: "User not found", success: false });
     }
 
-    if (user.containerStatus === "running") {
-      return res
-        .status(400)
-        .json({ error: "Container is already running", success: false });
+    const containerRunning = await getContainer(user.containerName);
+
+    if (containerRunning) {
+      return res.status(200).json({
+        url: getURL(user.containerName),
+        success: true,
+      });
     }
 
     if (!user.containerName) {
@@ -75,7 +83,7 @@ export const startSandbox = async (req: Request, res: Response) => {
       message: "Container started successfully",
       user: user,
       success: true,
-      url: `https://${user.containerName}.shubhamvscode.online`,
+      url: getURL(user.containerName),
     });
   } catch (error) {
     console.error("Error starting container:", error);

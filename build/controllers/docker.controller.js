@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getContainer = exports.stopContainer = exports.getContainers = exports.startContainer = void 0;
+exports.getURL = exports.getContainer = exports.stopContainer = exports.getContainers = exports.startContainer = void 0;
 const dockerode_1 = __importDefault(require("dockerode"));
 const docker = new dockerode_1.default();
 const startContainer = (params) => __awaiter(void 0, void 0, void 0, function* () {
@@ -78,5 +78,9 @@ const getContainer = (containerName) => __awaiter(void 0, void 0, void 0, functi
     }
 });
 exports.getContainer = getContainer;
+const getURL = (containerName) => {
+    return `https://${containerName}.shubhamvscode.online`;
+};
+exports.getURL = getURL;
 // startContainer();
 // getContainers();

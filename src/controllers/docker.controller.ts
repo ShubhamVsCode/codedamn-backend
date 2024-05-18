@@ -83,5 +83,9 @@ export const getContainer = async (containerName: string) => {
   }
 };
 
+export const getURL = (containerName: string) => {
+  return `https://${containerName}.shubhamvscode.online`;
+};
+
 // startContainer();
 // getContainers();

@@ -38,10 +38,12 @@ const startSandbox = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         if (!user) {
             return res.status(400).json({ error: "User not found", success: false });
         }
-        if (user.containerStatus === "running") {
-            return res
-                .status(400)
-                .json({ error: "Container is already running", success: false });
+        const containerRunning = yield (0, docker_controller_1.getContainer)(user.containerName);
+        if (containerRunning) {
+            return res.status(200).json({
+                url: (0, docker_controller_1.getURL)(user.containerName),
+                success: true,
+            });
         }
         if (!user.containerName) {
             const randomId = randomIdGenerator();
@@ -74,7 +76,7 @@ const startSandbox = (req, res) => __awaiter(void 0, void 0, void 0, function* (
             message: "Container started successfully",
             user: user,
             success: true,
-            url: `https://${user.containerName}.shubhamvscode.online`,
+            url: (0, docker_controller_1.getURL)(user.containerName),
         });
     }
     catch (error) {
