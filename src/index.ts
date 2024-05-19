@@ -114,7 +114,7 @@ server.on("upgrade", async (req, socket, head) => {
       console.log(`User Container Name: ${user.containerName}`);
 
       const { containerPort } = user;
-      const target = `ws://localhost:${containerPort}`;
+      const target = `http://localhost:${containerPort}`;
 
       console.log(`Forwarding WebSocket request to ${target}`);
 

@@ -106,7 +106,7 @@ server.on("upgrade", (req, socket, head) => __awaiter(void 0, void 0, void 0, fu
             }
             console.log(`User Container Name: ${user.containerName}`);
             const { containerPort } = user;
-            const target = `ws://localhost:${containerPort}`;
+            const target = `http://localhost:${containerPort}`;
             console.log(`Forwarding WebSocket request to ${target}`);
             proxy.ws(req, socket, head, { target, changeOrigin: true, ws: true }, (err) => {
                 console.error(err.message);
