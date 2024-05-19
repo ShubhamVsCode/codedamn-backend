@@ -29,6 +29,7 @@ dotenv_1.default.config();
 const app = (0, express_1.default)();
 const server = http_1.default.createServer(app);
 const proxy = http_proxy_1.default.createProxyServer();
+proxy.setMaxListeners(20); // Increase the limit of listeners
 const PORT = process.env.PORT || 8080;
 app.use(express_1.default.json());
 app.use((0, morgan_1.default)("dev"));

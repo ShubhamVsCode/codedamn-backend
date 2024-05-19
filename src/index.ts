@@ -17,6 +17,8 @@ dotenv.config();
 const app = express();
 const server = http.createServer(app);
 const proxy = httpProxy.createProxyServer();
+proxy.setMaxListeners(20); // Increase the limit of listeners
+
 const PORT = process.env.PORT || 8080;
 
 app.use(express.json());
