@@ -25,13 +25,13 @@ jobs:
         run: |
           echo "${{ secrets.AWS_SSH_KEY }}" > deploy_key
           chmod 600 deploy_key
-          ssh -i deploy_key $AWS_USERNAME@$AWS_HOST
+          ssh -i deploy_key $AWS_USERNAME@$AWS_HOST << 'EOF'
             cd app/backend
             git pull origin main
             npm install
             npm run build
             npm run start:pm2
-
+          EOF
         shell: bash
 
       - name: Clean up deploy key
