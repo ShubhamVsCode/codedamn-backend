@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "tsx watch ./src/index.ts",
-    "build": "tsc -p ./tsconfig.json",
+    "build": "npx tsc -p ./tsconfig.json",
     "start": "node ./build/index.js",
     "start:pm2": "pm2 startOrRestart ./build/index.js --name app"
   },
