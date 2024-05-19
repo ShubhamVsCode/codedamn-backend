@@ -21,6 +21,7 @@
     "mongoose": "^8.3.2",
     "morgan": "^1.10.0",
     "portfinder": "^1.0.32",
+    "socket.io": "^4.7.5",
     "sudo-prompt": "^9.2.1",
     "typescript": "^5.4.5",
     "ws": "^8.16.0",
