@@ -20,8 +20,6 @@ export const createOrGetUser = async (req: Request, res: Response) => {
       user = await UserModel.create({ email });
     }
 
-    console.log(user);
-
     res.status(200).json({ data: user, success: true });
   } catch (error) {
     res.status(500).json({ error, success: false });

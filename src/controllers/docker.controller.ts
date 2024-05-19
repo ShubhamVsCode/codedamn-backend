@@ -20,6 +20,29 @@ export const startContainer = async (params: StartContainerParams) => {
   } = params;
 
   try {
+    const containers = await docker.listContainers({ all: true });
+    const existingContainer = containers.find(
+      (container) => container.Names[0] === `/${containerName}`,
+    );
+
+    if (existingContainer) {
+      const container = docker.getContainer(existingContainer.Id);
+      console.log(existingContainer.State);
+      if (existingContainer.State !== "running") {
+        await container.remove();
+        console.log(
+          "Removed existing stopped container:",
+          existingContainer.Id,
+        );
+      } else {
+        console.log(
+          "Container with the same name is already running:",
+          existingContainer.Id,
+        );
+        return null;
+      }
+    }
+
     const container = await docker.createContainer({
       Image: "shubhamvscode/sandbox",
       name: containerName,
