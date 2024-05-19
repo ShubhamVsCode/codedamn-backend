@@ -108,7 +108,7 @@ server.on("upgrade", (req, socket, head) => __awaiter(void 0, void 0, void 0, fu
             const { containerPort } = user;
             const target = `ws://localhost:${containerPort}`;
             console.log(`Forwarding WebSocket request to ${target}`);
-            proxy.ws(req, socket, head, { target, changeOrigin: true }, (err) => {
+            proxy.ws(req, socket, head, { target, changeOrigin: true, ws: true }, (err) => {
                 console.error(err.message);
                 socket.end("Bad Gateway");
             });

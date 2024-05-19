@@ -118,10 +118,16 @@ server.on("upgrade", async (req, socket, head) => {
 
       console.log(`Forwarding WebSocket request to ${target}`);
 
-      proxy.ws(req, socket, head, { target, changeOrigin: true }, (err) => {
-        console.error(err.message);
-        socket.end("Bad Gateway");
-      });
+      proxy.ws(
+        req,
+        socket,
+        head,
+        { target, changeOrigin: true, ws: true },
+        (err) => {
+          console.error(err.message);
+          socket.end("Bad Gateway");
+        },
+      );
     } catch (err) {
       // console.error(err.message);
       socket.end("Bad Gateway");
