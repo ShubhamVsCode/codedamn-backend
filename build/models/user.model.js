@@ -11,7 +11,7 @@ exports.UserSchema = new mongoose_1.Schema({
     containerName: {
         type: String,
         // required: true,
-        unique: true,
+        // unique: true,
     },
     containerStatus: {
         type: String,

@@ -9,7 +9,7 @@ export const UserSchema = new Schema({
   containerName: {
     type: String,
     // required: true,
-    unique: true,
+    // unique: true,
   },
   containerStatus: {
     type: String,
