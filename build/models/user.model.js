@@ -10,13 +10,14 @@ exports.UserSchema = new mongoose_1.Schema({
     },
     containerName: {
         type: String,
-        required: true,
+        // required: true,
         unique: true,
     },
     containerStatus: {
         type: String,
-        required: true,
+        // required: true,
         enum: ["pending", "running", "stopped"],
+        // default: "pending",
     },
     containerPort: {
         type: String,
