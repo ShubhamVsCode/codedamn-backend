@@ -16,6 +16,7 @@ const express_1 = __importDefault(require("express"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const morgan_1 = __importDefault(require("morgan"));
 const cors_1 = __importDefault(require("cors"));
+const http_proxy_middleware_1 = require("http-proxy-middleware");
 const file_routes_1 = __importDefault(require("./routes/file.routes"));
 const db_1 = require("./utils/db");
 const mongoose_1 = require("mongoose");
@@ -47,13 +48,13 @@ app.use((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
                 return res.status(404).json({ message: "Not found" });
             console.log(`User Container Name: ${user.containerName}`);
             const { containerPort } = user;
-            req.headers.host = `localhost:${containerPort}`;
-            console.log(`Forwarding request to localhost:${containerPort}`);
+            const target = `http://localhost:${containerPort}`;
+            console.log(`Forwarding request to ${target}`);
+            return (0, http_proxy_middleware_1.createProxyMiddleware)({ target, changeOrigin: true })(req, res, next);
         }
         catch (err) {
             return next(err);
         }
-        return next();
     }
     else {
         return next();

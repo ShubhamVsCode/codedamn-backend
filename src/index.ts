@@ -2,6 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import morgan from "morgan";
 import cors from "cors";
+import { createProxyMiddleware } from "http-proxy-middleware";
 import fileRouter from "./routes/file.routes";
 import { connectDb } from "./utils/db";
 import { MongooseError } from "mongoose";
@@ -41,13 +42,18 @@ app.use(async (req, res, next) => {
       console.log(`User Container Name: ${user.containerName}`);
 
       const { containerPort } = user;
-      req.headers.host = `localhost:${containerPort}`;
+      const target = `http://localhost:${containerPort}`;
 
-      console.log(`Forwarding request to localhost:${containerPort}`);
+      console.log(`Forwarding request to ${target}`);
+
+      return createProxyMiddleware({ target, changeOrigin: true })(
+        req,
+        res,
+        next,
+      );
     } catch (err) {
       return next(err);
     }
-    return next();
   } else {
     return next();
   }
