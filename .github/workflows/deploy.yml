@@ -1,0 +1,48 @@
+name: Node.js CI/CD
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "16"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests
+        run: npm test
+
+      - name: Build project
+        run: npm run build
+
+      - name: Deploy to AWS
+        env:
+          AWS_HOST: ${{ secrets.AWS_HOST }}
+          AWS_USERNAME: ${{ secrets.AWS_USERNAME }}
+        run: |
+          echo "${{ secrets.AWS_SSH_KEY }}" > deploy_key
+          chmod 600 deploy_key
+          ssh -i deploy_key -o StrictHostKeyChecking=no $AWS_USERNAME@$AWS_HOST << 'EOF'
+            cd /path/to/your/app
+            git pull origin main
+            npm install
+            npm run build
+            pm2 restart all || pm2 start npm --name "app-name" -- run start:pm2
+          EOF
+        shell: bash
+
+      - name: Clean up deploy key
+        run: rm deploy_key
+        if: always()
