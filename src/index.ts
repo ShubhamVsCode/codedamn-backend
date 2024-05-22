@@ -63,11 +63,12 @@ app.use(async (req, res, next) => {
 
       console.log(`Forwarding request to ${target}`);
 
-      return createProxyMiddleware({
-        target,
-        changeOrigin: true,
-        ws: true,
-      })(req, res, next);
+      return proxy.web(req, res, { target });
+      // return createProxyMiddleware({
+      //   target,
+      //   changeOrigin: true,
+      //   ws: true,
+      // })(req, res, next);
     } catch (err) {
       console.error(`Error in forwarding request:`, err);
       return next(err);
