@@ -39,10 +39,10 @@ app.use(async (req, res, next) => {
     return next();
   }
 
-  const runningApp = subdomain.split("-")[2];
+  const runningAppPort = subdomain.split("-")[2];
 
-  if (runningApp) {
-    subdomain = subdomain.replace(`-${runningApp}`, "");
+  if (runningAppPort) {
+    subdomain = subdomain.replace(`-${runningAppPort}`, "");
   }
 
   console.log(`Request for ${subdomain}`);
@@ -54,7 +54,11 @@ app.use(async (req, res, next) => {
       console.log(`User Container Name: ${user.containerName}`);
 
       const { containerPort } = user;
-      const target = `http://localhost:${containerPort}:${runningApp}`;
+      let target = `http://localhost:${containerPort}`;
+
+      if (runningAppPort) {
+        target = `http://localhost:${containerPort}:${runningAppPort}`;
+      }
 
       console.log(`Forwarding request to ${target}`);
 
