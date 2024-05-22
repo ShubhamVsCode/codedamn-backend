@@ -67,9 +67,6 @@ app.use(async (req, res, next) => {
         target,
         changeOrigin: true,
         ws: true,
-        headers: {
-          "X-Forwarded-Port": runningAppPort,
-        },
       })(req, res, next);
     } catch (err) {
       console.error(`Error in forwarding request:`, err);
@@ -152,7 +149,11 @@ server.on("upgrade", async (req, socket, head) => {
         req,
         socket,
         head,
-        { target, changeOrigin: true, ws: true },
+        {
+          target,
+          changeOrigin: true,
+          ws: true,
+        },
         (err) => {
           console.error(err.message);
           socket.end("Bad Gateway");
