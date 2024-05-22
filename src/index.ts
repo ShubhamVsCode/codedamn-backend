@@ -39,13 +39,13 @@ app.use(async (req, res, next) => {
     return next();
   }
 
-  const runningAppPort = subdomain.split("-")[2];
+  // const runningAppPort = subdomain.split("-")[2];
 
-  if (runningAppPort) {
-    subdomain = subdomain.replace(`-${runningAppPort}`, "");
-  }
+  // if (runningAppPort) {
+  //   subdomain = subdomain.replace(`-${runningAppPort}`, "");
+  // }
 
-  console.log(`Request for ${subdomain}`, `runningAppPort: ${runningAppPort}`);
+  // console.log(`Request for ${subdomain}`, `runningAppPort: ${runningAppPort}`);
   if (subdomain) {
     try {
       const user = await UserModel.findOne({ containerName: subdomain });
@@ -56,10 +56,10 @@ app.use(async (req, res, next) => {
       const { containerPort } = user;
       let target = `http://localhost:${containerPort}`;
 
-      if (runningAppPort) {
-        target = `http://localhost:${containerPort}`;
-        res.cookie("port", runningAppPort);
-      }
+      // if (runningAppPort) {
+      //   target = `http://localhost:${containerPort}`;
+      //   res.cookie("port", runningAppPort);
+      // }
 
       console.log(`Forwarding request to ${target}`);
 
@@ -115,11 +115,11 @@ server.on("upgrade", async (req, socket, head) => {
     return;
   }
 
-  let runningAppPort = subdomain?.split("-")[2];
+  // let runningAppPort = subdomain?.split("-")[2];
 
-  if (runningAppPort) {
-    subdomain = subdomain?.replace(`-${runningAppPort}`, "");
-  }
+  // if (runningAppPort) {
+  //   subdomain = subdomain?.replace(`-${runningAppPort}`, "");
+  // }
 
   console.log(`WebSocket request for ${subdomain}`);
   if (subdomain) {
