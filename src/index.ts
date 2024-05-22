@@ -58,7 +58,7 @@ app.use(async (req, res, next) => {
 
       if (runningAppPort) {
         target = `http://localhost:${containerPort}`;
-        req.headers["X-Forwarded-Port"] = runningAppPort;
+        req.headers["x-forwarded-port"] = runningAppPort;
       }
 
       console.log(`Forwarding request to ${target}`);
@@ -140,7 +140,7 @@ server.on("upgrade", async (req, socket, head) => {
 
       if (runningAppPort) {
         target = `http://localhost:${containerPort}`;
-        req.headers["X-Forwarded-Port"] = runningAppPort;
+        req.headers["x-forwarded-port"] = runningAppPort;
       }
 
       console.log(`Forwarding WebSocket request to ${target}`);
