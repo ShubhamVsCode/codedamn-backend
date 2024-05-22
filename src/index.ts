@@ -68,9 +68,11 @@ app.use(async (req, res, next) => {
         next,
       );
     } catch (err) {
+      console.error(`Error in forwarding request:`, err);
       return next(err);
     }
   } else {
+    console.log("Not going to subdomain");
     return next();
   }
 });
