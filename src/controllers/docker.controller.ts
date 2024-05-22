@@ -21,8 +21,6 @@ export const startContainer = async (params: StartContainerParams) => {
 
   const exposedPorts = {
     [`${containerPort}/tcp`]: {},
-    [`3000/tcp`]: {},
-    [`5173/tcp`]: {},
   };
 
   try {
@@ -55,8 +53,6 @@ export const startContainer = async (params: StartContainerParams) => {
       HostConfig: {
         PortBindings: {
           [`${containerPort}/tcp`]: [{ HostPort: hostPort }],
-          [`3000/tcp`]: [{ HostPort: "3000" }],
-          [`5173/tcp`]: [{ HostPort: "5173" }],
         },
         Binds: [`${hostMountLocation}:/${containerMountLocation}`],
       },
