@@ -58,7 +58,7 @@ app.use(async (req, res, next) => {
 
       if (runningAppPort) {
         target = `http://localhost:${containerPort}`;
-        req.headers["x-forwarded-port"] = runningAppPort;
+        res.cookie("port", runningAppPort);
       }
 
       console.log(`Forwarding request to ${target}`);
@@ -121,10 +121,7 @@ server.on("upgrade", async (req, socket, head) => {
     subdomain = subdomain?.replace(`-${runningAppPort}`, "");
   }
 
-  console.log(
-    `WebSocket request for ${subdomain}`,
-    `runningAppPort: ${runningAppPort}`,
-  );
+  console.log(`WebSocket request for ${subdomain}`);
   if (subdomain) {
     try {
       const user = await UserModel.findOne({ containerName: subdomain });
@@ -137,11 +134,6 @@ server.on("upgrade", async (req, socket, head) => {
 
       const { containerPort } = user;
       let target = `http://localhost:${containerPort}`;
-
-      if (runningAppPort) {
-        target = `http://localhost:${containerPort}`;
-        // req.headers["x-forwarded-port"] = runningAppPort;
-      }
 
       console.log(`Forwarding WebSocket request to ${target}`);
 
