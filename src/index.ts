@@ -101,7 +101,7 @@ server.listen(PORT, async () => {
 server.on("upgrade", async (req, socket, head) => {
   const hostname = req.headers.host;
   const domain = "shubhamvscode.online";
-  const subdomain = hostname?.replace(`.${domain}`, "");
+  let subdomain = hostname?.replace(`.${domain}`, "");
   const appDomain = "app";
 
   if (
@@ -114,7 +114,16 @@ server.on("upgrade", async (req, socket, head) => {
     return;
   }
 
-  console.log(`WebSocket request for ${subdomain}`);
+  let runningAppPort = subdomain?.split("-")[2];
+
+  if (runningAppPort) {
+    subdomain = subdomain?.replace(`-${runningAppPort}`, "");
+  }
+
+  console.log(
+    `WebSocket request for ${subdomain}`,
+    `runningAppPort: ${runningAppPort}`,
+  );
   if (subdomain) {
     try {
       const user = await UserModel.findOne({ containerName: subdomain });
@@ -126,7 +135,11 @@ server.on("upgrade", async (req, socket, head) => {
       console.log(`User Container Name: ${user.containerName}`);
 
       const { containerPort } = user;
-      const target = `http://localhost:${containerPort}`;
+      let target = `http://localhost:${containerPort}`;
+
+      if (runningAppPort) {
+        target = `http://localhost:${containerPort}:${runningAppPort}`;
+      }
 
       console.log(`Forwarding WebSocket request to ${target}`);
 
