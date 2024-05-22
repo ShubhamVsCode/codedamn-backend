@@ -19,6 +19,12 @@ export const startContainer = async (params: StartContainerParams) => {
     containerMountLocation,
   } = params;
 
+  const exposedPorts = {
+    [`${containerPort}/tcp`]: {},
+    [`3000/tcp`]: {},
+    [`5173/tcp`]: {},
+  };
+
   try {
     const containers = await docker.listContainers({ all: true });
     const existingContainer = containers.find(
@@ -47,12 +53,14 @@ export const startContainer = async (params: StartContainerParams) => {
       Image: "shubhamvscode/sandbox",
       name: containerName,
       HostConfig: {
-        PortBindings: { [`${containerPort}/tcp`]: [{ HostPort: hostPort }] },
+        PortBindings: {
+          [`${containerPort}/tcp`]: [{ HostPort: hostPort }],
+          [`3000/tcp`]: [{ HostPort: "3000" }],
+          [`5173/tcp`]: [{ HostPort: "5173" }],
+        },
         Binds: [`${hostMountLocation}:/${containerMountLocation}`],
       },
-      ExposedPorts: {
-        [`${containerPort}/tcp`]: {},
-      },
+      ExposedPorts: exposedPorts,
       Tty: true,
       Cmd: ["npm", "start"],
     });
