@@ -57,16 +57,20 @@ app.use(async (req, res, next) => {
       let target = `http://localhost:${containerPort}`;
 
       if (runningAppPort) {
-        target = `http://localhost:${runningAppPort}`;
+        target = `http://localhost:${containerPort}`;
+        req.headers["x-forwarded-port"] = runningAppPort;
       }
 
       console.log(`Forwarding request to ${target}`);
 
-      return createProxyMiddleware({ target, changeOrigin: true, ws: true })(
-        req,
-        res,
-        next,
-      );
+      return createProxyMiddleware({
+        target,
+        changeOrigin: true,
+        ws: true,
+        headers: {
+          "x-forwarded-port": runningAppPort,
+        },
+      })(req, res, next);
     } catch (err) {
       console.error(`Error in forwarding request:`, err);
       return next(err);
@@ -138,7 +142,8 @@ server.on("upgrade", async (req, socket, head) => {
       let target = `http://localhost:${containerPort}`;
 
       if (runningAppPort) {
-        target = `http://localhost:${runningAppPort}`;
+        target = `http://localhost:${containerPort}`;
+        req.headers["x-forwarded-port"] = runningAppPort;
       }
 
       console.log(`Forwarding WebSocket request to ${target}`);
