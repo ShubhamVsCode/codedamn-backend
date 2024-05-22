@@ -45,7 +45,7 @@ app.use(async (req, res, next) => {
     subdomain = subdomain.replace(`-${runningAppPort}`, "");
   }
 
-  console.log(`Request for ${subdomain}`);
+  console.log(`Request for ${subdomain}`, `runningAppPort: ${runningAppPort}`);
   if (subdomain) {
     try {
       const user = await UserModel.findOne({ containerName: subdomain });
