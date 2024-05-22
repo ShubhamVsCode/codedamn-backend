@@ -27,7 +27,7 @@ app.use(cors());
 app.use(async (req, res, next) => {
   const hostname = req.hostname;
   const domain = "shubhamvscode.online";
-  const subdomain = hostname.replace(`.${domain}`, "");
+  let subdomain = hostname.replace(`.${domain}`, "");
   const appDomain = "app";
 
   if (
@@ -39,6 +39,12 @@ app.use(async (req, res, next) => {
     return next();
   }
 
+  const runningApp = subdomain.split("-")[2];
+
+  if (runningApp) {
+    subdomain = subdomain.replace(`-${runningApp}`, "");
+  }
+
   console.log(`Request for ${subdomain}`);
   if (subdomain) {
     try {
@@ -48,7 +54,7 @@ app.use(async (req, res, next) => {
       console.log(`User Container Name: ${user.containerName}`);
 
       const { containerPort } = user;
-      const target = `http://localhost:${containerPort}`;
+      const target = `http://localhost:${containerPort}:${runningApp}`;
 
       console.log(`Forwarding request to ${target}`);
 
